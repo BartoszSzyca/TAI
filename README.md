@@ -30,12 +30,13 @@ Krótki opis programu.
 ## Użycie
 ```bash
 python bot_TAI.py
-
+```
 ## Rozwój
+Aktualnie program obsługuje podstawowe funkcje. Planowane funkcje do dodania:
 
 - [x] Uczenie modelu w trakcie rozmowy
 - [x] Urzywanie spotyfi
 - [x] Zapisywanie spotkań/wydarzeń w kalendarzu google
 
-Aktualnie program obsługuje podstawowe funkcje. Planowane funkcje do dodania:
+
 
