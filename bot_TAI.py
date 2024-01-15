@@ -2,10 +2,7 @@ import speech_recognition as sr
 from nltk.classify import NaiveBayesClassifier
 import csv
 import pandas as pd
-import pyttsx3 as tts #biblioteka odpowiedzialna za tworzenie głosu bota
-#import random
-#import nltk
-#import sounddevice as sd
+import pyttsx3 as tts 
 
 version = "0.1.0"
 author = "Bitrax"
@@ -15,22 +12,16 @@ bot = tts.init()
 bot.setProperty('rate', 150)
 message = ""
 
-#voices = engine.getProperty('voices')
-#engine.setProperty('voice', voices[0].id)
-
-# Otwieranie pliku CSV i odczytywanie danych
 with open("conversations.csv", "r", encoding="utf-8") as file:
     reader = csv.reader(file)
-    # Pomiń nagłówek (jeśli istnieje)
     next(reader)
-    # Tworzenie listy krotek z danymi z pliku CSV
     conversations = [(row[0], row[1]) for row in reader]
 
 def nasluchiwanie(language="pl-PL"):
     with sr.Microphone() as source:
         print("Nasłuchiwanie:")
         try:
-            audio = r.listen(source, timeout=5)  # Ustawienie limitu czasu na 5 sekund
+            audio = r.listen(source, timeout=5)
             message = r.recognize_google(audio, language=language)
             message = message.lower()
             print("Rozpoznawanie mowy Google myśli, że powiedziałeś: " + message)
@@ -48,11 +39,9 @@ def dzwiek(label):
     bot.say(label)
     bot.runAndWait()
 
-# Tworznie ekstraktora cech
 def extract_features(message):
     return {'message': message}
-
-# Przygotowanie zestawu funkcji
+    
 features = [
     (extract_features(message), label)
     for message, label in conversations
@@ -75,14 +64,12 @@ def pamiec(message):
             conversations.append((question, odpowiedz))
             dzwiek("Zapamiętam!")
 
-            # Zapisanie zmian do pliku CSV
             with open('conversations.csv', 'a', encoding='utf-8', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([question, odpowiedz])
         else:
             dzwiek("Ignoruje ostatnie polecenie!")
 
-# Trenuj klasyfikator
 classifier = NaiveBayesClassifier.train(features)
 
 print("Prowadź konwersacje po Polsku!") 
