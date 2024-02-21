@@ -42,7 +42,7 @@ Aktualnie program obsługuje podstawowe funkcje. Bot nasłuchuje i odpowiada na 
 - Ma zdolność nauki na podstawie wcześniejszych rozmów, zapisując je do pliku CSV. Planowane funkcje do dodania:
 
 - [x] Uczenie modelu w trakcie rozmowy
-- [x] Urzywanie spotyfi
+- [x] Używanie spotyfi
 - [x] Zapisywanie spotkań/wydarzeń w kalendarzu google
 
 ## Licencja
