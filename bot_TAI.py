@@ -9,14 +9,40 @@ from keras.layers import Embedding, SimpleRNN, Dense
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 from keras.models import load_model
+import subprocess
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
 
-version = "0.1.1"
+version = "0.1.2"
 author = "Bitrax"
 message = ""
 r = sr.Recognizer()
 bot = tts.init()
 bot.setProperty('rate', 150)
 message = ""
+scope = "user-read-playback-state,user-modify-playback-state"
+
+def read_spotify_credentials(file_path):
+    credentials = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            key, value = line.strip().split(' = ')
+            credentials[key] = value.strip("'")
+    return credentials
+
+file_path = 'spotify_credentials.txt'
+spotify_credentials = read_spotify_credentials(file_path)
+
+client_id = spotify_credentials['client_id']
+client_secret = spotify_credentials['client_secret']
+redirect_uri = spotify_credentials['redirect_uri']
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=client_id,
+    client_secret=client_secret,
+    redirect_uri=redirect_uri,
+    scope=scope
+))
 
 with open("conversations.csv", "r", encoding="utf-8") as file:
     reader = csv.reader(file)
@@ -93,6 +119,29 @@ def pamiec(message):
         else:
             dzwiek("Ignoruje ostatnie polecenie!")
 
+def open_spotify():
+    try:
+        subprocess.Popen(['explorer', 'spotify:'])
+        print("Aplikacja Spotify została otwarta.")
+    except Exception as e:
+        print("Wystąpił błąd podczas otwierania aplikacji Spotify:", str(e))
+
+def steruj_spotify(polecenie):
+    open_spotify()
+    devices = sp.devices()
+    if len(devices['devices']) > 0:
+        device_id = devices['devices'][0]['id']
+        if polecenie == "play":
+            sp.start_playback(device_id=device_id)
+        elif polecenie == "pause":
+            sp.pause_playback(device_id=device_id)
+        elif polecenie == "next":
+            sp.next_track(device_id=device_id)
+        elif polecenie == "previous":
+            sp.previous_track(device_id=device_id)
+    else:
+        print("Brak dostępnych urządzeń.")
+
 print("Prowadź konwersacje po Polsku!") 
 
 while message != "zakończ":
@@ -110,7 +159,9 @@ while message != "zakończ":
             if message == "zakończ":
                 break
             pamiec(message)
-
+            if message == "spotify":
+                polecenie = "play"
+                steruj_spotify(polecenie)
     if message == "zakończ":
         with open('countvectorizer_words.txt', 'w') as f:
             for word in vectorizer.get_feature_names_out():
